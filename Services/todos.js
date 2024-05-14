@@ -4,7 +4,6 @@ const todos = require('../Databases/todo.json');
 const path = require('path')
 
 const app = express();
-const pepo = 'ss';
 app.get('/', (req, res) => {
     // #swagger.description = 'Get index.html'
     // возвращаемый ответ
