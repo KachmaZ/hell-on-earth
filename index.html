@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cont&Orch</title>
+</head>
+<body>
+    <h1>Container ToDo test app</h1>
+    <form id="todos_add-form" name="add_todo">
+        <input name="todo" type="text" autocomplete="false">
+        <button type="submit">+</button>
+    </form>
+    <ol id="todos"></ol>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
+<script>
+    const getTodosList = async () => {
+        const todosOl = document.querySelector('#todos');
+        const response = await axios.get(window.location.origin + '/todos');
+        if (response.statusText === "OK") {
+            todosOl.innerHTML = ''
+            response.data.forEach(todo => {
+                todosOl.innerHTML += `
+                <li>
+                    <span>${todo}</span>
+                    <button>❌</button>
+                </li>
+                `
+            });
+
+            document.querySelectorAll('li > button').forEach((element, index) => {
+                element.onclick = async() => await deleteTodo(index)
+            })
+        };
+    };
+
+    const addTodo = async () => {
+        const newTodo = document.forms['add_todo'].elements['todo'].value
+        if (newTodo) {
+            const response = await axios.post(window.location.origin + '/todos', {newTodo})
+            await getTodosList();
+            document.forms['add_todo'].elements['todo'].value = ''
+        }
+        else {
+            alert('Введите ToDo')
+        }
+    };
+
+    const deleteTodo = async (todoID) => {
+        const response = axios.delete(window.location.origin + '/todos/' + todoID)
+        await getTodosList()
+    };
+    
+    getTodosList()
+
+    document.querySelector('#todos_add-form').onsubmit = async (e) => {
+        e.preventDefault();
+        await addTodo()
+    }
+</script>
+</html>
